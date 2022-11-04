@@ -212,6 +212,7 @@ public class Main {
     }
 
     public static void borrarTabla(){
+        String sql = "DELETE FROM";
 
     }
 }
