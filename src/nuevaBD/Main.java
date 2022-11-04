@@ -25,13 +25,18 @@ public class Main {
         crearConexion();
 
 
-        String[] camposProfesores = {"IdProfesorado int Primary Key AUTO_INCREMENT", "Nombre varchar(45)", "Apellidos varchar(45)", "FechaNacimiento date", "Antiguedad int"};
-        String[] camposAlumnos = {"IdAlumnado int Primary Key AUTO_INCREMENT", "Nombre varchar(45)", "Apellidos varchar(45)", "FechaNacimiento varchar(45)", "Curso int"};
-        String[] camposMatricula = {"IdProfesorado int", "IdAlumnado int", "Asignatura varchar(45)", "Curso int"};
-        insertarProfesores();
+        String[] camposProfesores = {"IdProfesorado int PRIMARY KEY AUTO_INCREMENT", "Nombre varchar(45)", "Apellidos varchar(45)", "FechaNacimiento date", "Antiguedad int"};
+        String[] camposAlumnos = {"IdAlumnado int PRIMARY KEY AUTO_INCREMENT", "Nombre varchar(45)", "Apellidos varchar(45)", "FechaNacimiento varchar(45)"};
+        String[] camposMatricula = {"IdMatricula int AUTO_INCREMENT", "IdProfesorado int", "IdAlumnado int", "Asignatura varchar(45)", "Curso int",
+                                    "PRIMARY KEY (IdMatricula)",
+                                    "FOREIGN KEY (IdProfesorado) REFERENCES Profesores(IdProfesorado) ON DELETE CASCADE ON UPDATE CASCADE",
+                                    "FOREIGN KEY (IdAlumnado) REFERENCES Alumnos(IdAlumnado) ON DELETE CASCADE ON UPDATE CASCADE"};
         //crearTablaProfesores(camposProfesores);
         //crearTablaAlumnos(camposAlumnos);
         //crearTablaMatricula(camposMatricula);
+        //insertarProfesores();
+        //insertarAlumnos();
+        //insertarMatricula();
     }
 
 
@@ -139,5 +144,74 @@ public class Main {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+
+    }
+
+    public static void insertarAlumnos() {
+        try {
+            List<String> lista = new ArrayList<>();
+
+            try (FileReader fr = new FileReader("src/nuevaBD/Alumnos.txt");
+                 BufferedReader br = new BufferedReader(fr)) {
+                String linea;
+
+                while ((linea = br.readLine()) != null) {
+                    lista.add(linea);
+                }
+
+                String[] listaAlumnos = new String[lista.size()];
+                for (int i = 0; i < lista.size(); i++) {
+                    listaAlumnos[i] = lista.get(i);
+                }
+
+                st = connection.createStatement();
+                for (String sql : listaAlumnos) {
+                    st.executeUpdate(sql);
+                }
+
+                st.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static void insertarMatricula() {
+        try {
+            List<String> lista = new ArrayList<>();
+
+            try (FileReader fr = new FileReader("src/nuevaBD/Matricula.txt");
+                 BufferedReader br = new BufferedReader(fr)) {
+                String linea;
+
+                while ((linea = br.readLine()) != null) {
+                    lista.add(linea);
+                }
+
+                String[] listaAlumnos = new String[lista.size()];
+                for (int i = 0; i < lista.size(); i++) {
+                    listaAlumnos[i] = lista.get(i);
+                }
+
+                st = connection.createStatement();
+                for (String sql : listaAlumnos) {
+                    st.executeUpdate(sql);
+                }
+
+                st.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static void borrarTabla(){
+
     }
 }
