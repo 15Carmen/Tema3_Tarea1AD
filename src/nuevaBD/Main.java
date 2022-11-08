@@ -37,6 +37,7 @@ public class Main {
         //insertarProfesores();
         //insertarAlumnos();
         //insertarMatricula();
+        //borrarTabla("ad2223_cmartin.Matricula");
     }
 
 
@@ -211,8 +212,22 @@ public class Main {
         }
     }
 
-    public static void borrarTabla(){
-        String sql = "DELETE FROM";
+    public static void borrarTabla(String tabla){
+        try {
+            st = connection.createStatement();
 
+//Dropping Table
+            String sql = "DROP TABLE " + tabla;
+            st.executeUpdate(sql);
+            System.out.println("Tabla borrada");
+
+        } catch (SQLException e) {
+            System.out.println("Esta tabla no existe");
+        }
+        try {
+            connection.close();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
