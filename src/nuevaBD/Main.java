@@ -4,10 +4,7 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -38,6 +35,11 @@ public class Main {
         //insertarAlumnos();
         //insertarMatricula();
         //borrarTabla("ad2223_cmartin.Matricula");
+        //actualizarTablaProfes();
+        //actualizarTablaAlumnos();
+        //actualizarTablaMatricula();
+        //cambiarPassword();
+
     }
 
 
@@ -45,11 +47,18 @@ public class Main {
         connection = null;
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
-            connection = DriverManager.getConnection(servidor, "cmartin", "Marnu");
+            connection = DriverManager.getConnection(servidor + "/ad2223_cmartin", "ad2223_cmartin", "Marnu");
+
+            listarTablas();
 
         } catch (ClassNotFoundException | SQLException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public static void cambiarPassword() throws SQLException {
+        st = connection.createStatement();
+        st.executeUpdate("SET PASSWORD for 'ad2223_cmartin' = password('Marnu')");
     }
 
     public static void crearTablaProfesores(String[] camposProfesores) {
@@ -133,7 +142,7 @@ public class Main {
                 }
 
                 st = connection.createStatement();
-                for (String sql: listaProfes) {
+                for (String sql : listaProfes) {
                     st.executeUpdate(sql);
                 }
 
@@ -212,11 +221,10 @@ public class Main {
         }
     }
 
-    public static void borrarTabla(String tabla){
+    public static void borrarTabla(String tabla) {
         try {
             st = connection.createStatement();
 
-//Dropping Table
             String sql = "DROP TABLE " + tabla;
             st.executeUpdate(sql);
             System.out.println("Tabla borrada");
@@ -230,4 +238,58 @@ public class Main {
             throw new RuntimeException(e);
         }
     }
+
+    public static void listarTablas() throws SQLException {
+        String sql = "SHOW TABLES";
+        PreparedStatement ps = connection.prepareStatement(sql);
+        ResultSet rs = ps.executeQuery();
+        while (rs.next()) {
+            System.out.println(rs.getString(1));
+        }
+    }
+
+    public static void actualizarTablaProfes() throws SQLException {
+        st = connection.createStatement();
+
+        String sql = "UPDATE ad2223_cmartin.Profesores SET Nombre = 'Antonio' WHERE Nombre = 'Ford'";
+        st.executeUpdate(sql);
+
+        ResultSet rs = st.executeQuery("SELECT Nombre, Apellidos, FechaNacimiento, Antiguedad FROM ad2223_cmartin.Profesores");
+        while (rs.next()) {
+            System.out.print("Nombre: " + rs.getString("Nombre"));
+            System.out.print(", Apellidos: " + rs.getString("Apellidos"));
+            System.out.print(", FechaNacimiento: " + rs.getDate("FechaNacimiento"));
+            System.out.println(", Antiguedad: " + rs.getInt("Antiguedad"));
+        }
+    }
+
+    public static void actualizarTablaAlumnos() throws SQLException {
+        st = connection.createStatement();
+
+        String sql = "UPDATE ad2223_cmartin.Alumnos SET Nombre = 'Bernarda' WHERE Nombre = 'Wilona'";
+        st.executeUpdate(sql);
+
+        ResultSet rs = st.executeQuery("SELECT Nombre, Apellidos, FechaNacimiento FROM ad2223_cmartin.Alumnos");
+        while (rs.next()) {
+            System.out.print("Nombre: " + rs.getString("Nombre"));
+            System.out.print(", Apellidos: " + rs.getString("Apellidos"));
+            System.out.print(", FechaNacimiento: " + rs.getString("FechaNacimiento"));
+        }
+    }
+
+    public static void actualizarTablaMatricula() throws SQLException {
+        st = connection.createStatement();
+
+        String sql = "UPDATE ad2223_cmartin.Matricula SET Asignatura = 'Programacion' WHERE Asignatura = 'Finance'";
+        st.executeUpdate(sql);
+
+        ResultSet rs = st.executeQuery("SELECT IdMatricula, Asignatura, Curso  FROM ad2223_cmartin.Matricula");
+        while (rs.next()) {
+            System.out.print("IdMatricula: " + rs.getInt("IdMatricula"));
+            System.out.print(", Asignatura: " + rs.getString("Asignatura"));
+            System.out.println(", Curso: " + rs.getInt("Curso"));
+        }
+    }
+
+
 }
